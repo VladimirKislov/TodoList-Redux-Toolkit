@@ -1,0 +1,14 @@
+li {
+    display: flex;
+    padding: 50px;
+}
+
+.cardLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.green {
+    background-color: #87f487;
+}

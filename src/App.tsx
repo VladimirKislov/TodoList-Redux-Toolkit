@@ -1,56 +1,98 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import "./App.css";
+import { AppDispatch } from "./app/store";
+import { addApiTodo,  responseApiTodo } from "./app/todoSlice";
+import { TodoList } from "./components/TodoList";
+
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "./firebase";
 
 function App() {
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [date, setDate] = useState("");
+
+  const [fileUpload, setFileUpload] = useState<any>(null);
+  const [fileUri, setFileUri] = useState([]);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(responseApiTodo());
+  }, [dispatch]);
+
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    const file = fileUpload.name;
+    try {
+      dispatch(addApiTodo({ title, desc, date, file }));
+      if (fileUpload == null) return;
+      const imageRef = ref(storage, `images/${fileUpload.name}`);
+      uploadBytes(imageRef, fileUpload).then((snapshot) => {
+        getDownloadURL(snapshot.ref)
+          .then((url: any) => {
+            setFileUri(fileUri.concat(url));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+      setFileUpload("");
+      setTitle("");
+      setDate("");
+      setDesc("");
+    } catch (error) {}
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+      <Form className="p-5 w-50">
+        <h2 className="title h2">Задача:</h2>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Тема</Form.Label>
+          <Form.Control
+            type="text"
+            value={title}
+            placeholder="Тема"
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Описание</Form.Label>
+          <Form.Control
+            type="textarea"
+            value={desc}
+            placeholder="Описание"
+            onChange={(e) => setDesc(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Дата завершения</Form.Label>
+          <Form.Control
+            type="date"
+            value={date}
+            placeholder="Дата завершения"
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Control
+            type="file"
+            onChange={(event: any) => {
+              setFileUpload(event.target.files[0]);
+            }}
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e)}>
+          Создать Задачу
+        </Button>
+      </Form>
+      <TodoList />
     </div>
   );
 }
