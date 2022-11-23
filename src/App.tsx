@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
-import { AppDispatch } from "./app/store";
+import { AppDispatch, RootState } from "./app/store";
 import { addApiTodo,  responseApiTodo } from "./app/todoSlice";
 import { TodoList } from "./components/TodoList";
 
@@ -10,8 +10,10 @@ import Button from "react-bootstrap/Button";
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
+import { LoaderPage } from "./components/LoaderPage";
 
 function App() {
+  const loading = useSelector<RootState, any>(state => state.todo.status);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [date, setDate] = useState("");
@@ -92,7 +94,7 @@ function App() {
           Создать Задачу
         </Button>
       </Form>
-      <TodoList />
+      {loading === "loading" ? <LoaderPage /> : <TodoList />}
     </div>
   );
 }

@@ -23,6 +23,7 @@ interface TodoProps {
 export function TodoItem({ id, title, desc, date, file, completed }: TodoProps) {
   const todo = useSelector<RootState, any>((state) => state.todo.list);
   const [imageUri, setImageUri] = useState<any>([]);
+  const [currentDate] = useState(new Date())
   const [err, setErr] = useState(false);
   const [uri] = useState('https://kartinkin.net/uploads/posts/2022-02/thumbs/1645896559_19-kartinkin-net-p-dokumenti-kartinki-dlya-prezentatsii-21.jpg')
   const [checked, setChecked] = useState<boolean>();
@@ -66,9 +67,11 @@ export function TodoItem({ id, title, desc, date, file, completed }: TodoProps) 
     <li>
       <Card
         className={
-          completed
-            ? "card green square border border-success border-3"
-            : "card square border border-info border-3"
+          currentDate <= new Date(date)
+            ? completed
+              ? "card green square border border-success border-3"
+              : "card square border border-info border-3"
+            : "card danger square border border-danger border-3"
         }
         style={{ width: "18rem" }}
       >

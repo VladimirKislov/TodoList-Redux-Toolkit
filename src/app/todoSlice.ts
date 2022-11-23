@@ -37,7 +37,7 @@ export const responseApiTodo: any = createAsyncThunk("todo/responseApiTodo", asy
 });
 
 export const deletedApiTodo: any = createAsyncThunk(
-  "todo/responseApiTodo",
+  "todo/deletedApiTodo",
   async function (id: any, { dispatch, rejectWithValue }) {
     try {
       await axios.delete("https://back-api-bank.herokuapp.com/api/todo/delete", {
@@ -52,7 +52,7 @@ export const deletedApiTodo: any = createAsyncThunk(
 );
 
 export const addApiTodo: any = createAsyncThunk(
-  "todo/responseApiTodo",
+  "todo/addApiTodo",
   async function ({ title, desc, date, file }: ListObj, { rejectWithValue, dispatch }) {
     try {
       const response = await axios
@@ -74,7 +74,7 @@ export const addApiTodo: any = createAsyncThunk(
 );
 
 export const updateApiTodo: any = createAsyncThunk(
-  "todo/responseApiTodo",
+  "todo/updateApiTodo",
   async function ({ id, checked }: UpdateProp, { rejectWithValue }) {
     try {
       await axios.post("https://back-api-bank.herokuapp.com/api/todo/update", {
@@ -128,7 +128,7 @@ const todoSlice = createSlice({
     },
 
     [responseApiTodo.fulfilled]: (state, action) => {
-      state.status = "resoved";
+      state.status = "resolved";
       if (action.payload !== undefined) state.list = action.payload;
     },
 

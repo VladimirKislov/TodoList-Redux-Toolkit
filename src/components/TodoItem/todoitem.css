@@ -12,3 +12,7 @@ li {
 .green {
     background-color: #87f487;
 }
+
+.danger {
+    background-color: #f5ae87;
+}
