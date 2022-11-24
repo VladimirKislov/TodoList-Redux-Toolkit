@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { changeTodo, deleteTodo, deletedApiTodo, updateApiTodo } from "../../app/todoSlice"; //
+import { changeTodo, deleteTodo, deletedApiTodo, updateApiTodo, addFile } from "../../app/todoSlice"; //
 import "./todoitem.css";
-import { ref, getDownloadURL } from "firebase/storage";
+import { ref, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "../../firebase";
 
 import Button from "react-bootstrap/Button";
@@ -56,6 +56,15 @@ export function TodoItem({ id, title, desc, date, file, completed }: TodoProps) 
   const handleDelete = () => {
     dispatch(deletedApiTodo(id));
     dispatch(deleteTodo({ id }));
+    dispatch(addFile(file));
+    
+    deleteObject(ref(storage, `images/${file}`))
+      .then(() => {
+        console.log(`file "${file}" successful delete`);
+      })
+      .catch((error) => {
+        console.error(error)
+      });
   };
 
   const handleChecked = () => {
@@ -80,7 +89,6 @@ export function TodoItem({ id, title, desc, date, file, completed }: TodoProps) 
         ) : (
           <Card.Img className="h-25" variant="top" src={uri} />
         )}
-
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           <Card.Text>{desc}</Card.Text>

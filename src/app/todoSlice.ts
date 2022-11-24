@@ -5,6 +5,7 @@ interface ToDoListType {
   list: Array<ListObj>;
   status: null | string;
   error: null | string;
+  file: null | string;
 }
 
 interface ListObj {
@@ -55,16 +56,15 @@ export const addApiTodo: any = createAsyncThunk(
   "todo/addApiTodo",
   async function ({ title, desc, date, file }: ListObj, { rejectWithValue, dispatch }) {
     try {
-      const response = await axios
-        .post("https://back-api-bank.herokuapp.com/api/todo/add", {
-          headers: { "Content-Type": "application/json" },
-          id: nanoid(),
-          title: title,
-          desc: desc,
-          date: date,
-          file: file,
-          completed: false,
-        });
+      const response = await axios.post("https://back-api-bank.herokuapp.com/api/todo/add", {
+        headers: { "Content-Type": "application/json" },
+        id: nanoid(),
+        title: title,
+        desc: desc,
+        date: date,
+        file: file,
+        completed: false,
+      });
       dispatch(addTodo(response.data));
       dispatch(responseApiTodo());
     } catch (error) {
@@ -79,7 +79,7 @@ export const updateApiTodo: any = createAsyncThunk(
     try {
       await axios.post("https://back-api-bank.herokuapp.com/api/todo/update", {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         id: id,
         completed: !checked,
@@ -101,6 +101,7 @@ const todoSlice = createSlice({
     list: [],
     status: null,
     error: null,
+    file: null,
   } as ToDoListType,
   reducers: {
     addTodo(state, action) {
@@ -119,6 +120,9 @@ const todoSlice = createSlice({
     changeTodo(state, action) {
       const changeCompleted: ListObj | any = state.list.find((item) => item.id === action.payload.id);
       changeCompleted.completed = !changeCompleted.completed;
+    },
+    addFile(state, action) {
+      state.file = action.payload;
     },
   },
   extraReducers: {
@@ -139,5 +143,5 @@ const todoSlice = createSlice({
   },
 });
 
-export const { addTodo, deleteTodo, changeTodo } = todoSlice.actions;
+export const { addTodo, deleteTodo, changeTodo, addFile } = todoSlice.actions;
 export default todoSlice.reducer;
